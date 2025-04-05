@@ -1,17 +1,47 @@
-import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig';
 
 const RegisterScreen = () => {
   const navigation = useNavigation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [user, setUser] = useState("")
+  const [name, setName] = useState("")
 
   const handleRegister = () => {
-
+    if (name === "") {
+      Alert.alert('❌❌❌', 'El usuario no puede ser vacio')
+      return false
+    }
+    if (email === "") {
+      Alert.alert('❌❌❌', 'El correo no puede ser vacio')
+      return false
+    }
+    if (password === "") {
+      Alert.alert('❌❌❌', 'El Contraseña no puede ser vacia')
+      return false
+    }
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      updateProfile(user, { displayName: name }).then(() => {
+        Alert.alert("✅✅✅", "Usuario registrado correctamente");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      }).catch((error) => {
+        Alert.alert("❌❌❌", error.message);
+      });
+    })
+    .catch((error) => {
+      Alert.alert("❌❌❌", error.message);
+    });
   }
+  
   return (
     <SafeAreaView>
       <View style={style.containerTitle}>
@@ -22,8 +52,8 @@ const RegisterScreen = () => {
         <TextInput
           placeholder="Usuario"
           style={style.input}
-          value={user}
-          onChangeText={setUser}
+          value={name}
+          onChangeText={setName}
         />
       </View>
       <View style={style.inputContainer}>
@@ -51,7 +81,7 @@ const RegisterScreen = () => {
 
       <TouchableOpacity style={style.inputContainer} onPress={() => navigation.goBack()}>
         <Text>¿Ya tienes cuenta?</Text>
-        <Text style={{fontWeight:'bold'}} > Inicia Sesion</Text>
+        <Text style={{ fontWeight: 'bold' }} > Inicia Sesion</Text>
       </TouchableOpacity>
     </SafeAreaView >
   )

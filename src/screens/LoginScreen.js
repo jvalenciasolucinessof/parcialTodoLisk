@@ -1,15 +1,34 @@
-import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig';
 
 const LoginScreen = () => {
   const navigation = useNavigation()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("1@1.com")
+  const [password, setPassword] = useState("123456")
 
   const handleLogin = () => {
-
+    if(email === "") {
+      Alert.alert('❌❌❌','El correo no puede ser vacio')
+      return false
+    }
+    if(password === "") {
+      Alert.alert('❌❌❌','El Contraseña no puede ser vacia')
+      return false
+    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+      })
+      .catch((error) => {
+        Alert.alert("❌❌❌", error.code);
+      });
   }
   return (
     <SafeAreaView>
