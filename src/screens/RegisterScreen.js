@@ -18,7 +18,7 @@ const RegisterScreen = () => {
         <Text style={style.title}>REGISTRATE</Text>
       </View>
       <View style={style.inputContainer}>
-        <Ionicons name="at-outline" size={20} color="black" />
+        <Ionicons name="person-outline" size={20} color="black" />
         <TextInput
           placeholder="Usuario"
           style={style.input}
